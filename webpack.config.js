@@ -13,8 +13,8 @@ module.exports = (env, argv) => {
     entry: './bootstrap.js',
     output: {
       path: distPath,
-      filename: "todomvc.js",
-      webassemblyModuleFilename: "todomvc.wasm"
+      filename: "prc.js",
+      webassemblyModuleFilename: "prc.wasm"
     },
     plugins: [
       new CopyWebpackPlugin([
