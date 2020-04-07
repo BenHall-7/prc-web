@@ -1,29 +1,19 @@
-[![Netlify Status](https://api.netlify.com/api/v1/badges/5ba03ba7-ff8b-4c54-94e7-cd5fd76a6737/deploy-status)](https://app.netlify.com/sites/yew-todomvc/deploys)
+# prc-web
 
-## About
+`prc-web` is an online prc filetype viewer and editor. Currently it is not deployed, so running for development purposes may require the user to build it separately.
 
-This template shows how to create a web app using Yew and wasm-pack. 
+## Building
 
-## 🚴 Usage
+*Prerequisites:*
 
-### 🛠️ Build with `yarn run build`
+- Rust: Cargo, Wasm-pack
 
-```
-yarn run build
-```
+- Javascript: Node, Yarn (alternatively npm, if you modify instructions suitably)
 
-### 🔬 Serve locally with `yarn run start:dev`
+*Start the development server:*
 
-```
-yarn run start:dev
-```
+- `yarn` to install dependencies
 
+- `yarn build` to create a `dist` folder with the needed files
 
-## 🔋 Batteries Included
-
-* [`wasm-bindgen`](https://github.com/rustwasm/wasm-bindgen) for communicating
-  between WebAssembly and JavaScript.
-* [`console_error_panic_hook`](https://github.com/rustwasm/console_error_panic_hook)
-  for logging panic messages to the developer console.
-* [`wee_alloc`](https://github.com/rustwasm/wee_alloc), an allocator optimized
-  for small code size.
+- `yarn start` to begin a development server
