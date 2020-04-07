@@ -1,22 +1,7 @@
 use yew::{Component, ComponentLink, Properties, Html, html};
 use prc::param::{ParamKind};
+use prc::strum::AsStaticRef;
 use prc::hash40::Hash40;
-
-#[derive(Debug, Clone, Properties)]
-pub struct TreeProps {
-    pub param: ParamKind,
-
-    pub parent: Option<ParentInfo>,
-
-    #[prop_or_default]
-    pub expand: bool,
-}
-
-impl TreeProps {
-    pub fn new(param: ParamKind, parent: Option<ParentInfo>, expand: bool) -> Self {
-        TreeProps { param, parent, expand }
-    }
-}
 
 #[derive(Debug, Clone, Copy)]
 pub enum ParentInfo {
@@ -35,6 +20,22 @@ impl ParentInfo {
     }
 }
 
+#[derive(Debug, Clone, Properties)]
+pub struct TreeProps {
+    pub param: ParamKind,
+
+    pub parent: Option<ParentInfo>,
+
+    #[prop_or_default]
+    pub expand: bool,
+}
+
+impl TreeProps {
+    pub fn new(param: ParamKind, parent: Option<ParentInfo>, expand: bool) -> Self {
+        TreeProps { param, parent, expand }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum TreeNode {
     /// Contains children, parent info, and a property for whether it is expanded
@@ -46,6 +47,7 @@ pub enum TreeNode {
 }
 
 impl TreeNode {
+    #[inline]
     pub fn can_expand(&self) -> bool {
         match self {
             TreeNode::Struct(children, _, _) => !children.is_empty(),
@@ -109,69 +111,50 @@ impl Component for TreeNode {
     }
 
     fn view(&self) -> Html {
+        macro_rules! get_html_with_children {
+            ($main_tag:ident, $node_text:expr) => {
+                html! {<$main_tag>
+                    { if self.can_expand() {
+                        html! {<button> 
+                            { if *expanded {
+                                html! {<image src="image/angle-down-solid.svg"/>}
+                            } else {
+                                html! {<image src="image/angle-down-solid.svg"/>}
+                            }}
+                        </button>}
+                    } else { html!{} }}
+                    <p>{$node_text}</p>
+                    { if *expanded {
+                        html! {<ul>
+                            {children.iter().map(|c| c.view()).collect::<Html>()}    
+                        </ul>}
+                    } else {
+                        html! {}
+                    }}
+                </$main_tag>}
+            };
+        }
+        macro_rules! get_html {
+            ($main_tag:ident, $node_text:expr) => {
+                html! {<$main_tag><p>{$node_text}</p></$main_tag>}
+            };
+        }
+
         match self {
             TreeNode::Struct(children, parent_info, expanded) => {
                 if let Some(parent) = parent_info {
-                    html! {<li>
-                        <p>{parent.get_name() + " (Struct)"}</p>
-                        {
-                            if *expanded {
-                                html! {<ul>
-                                    {children.iter().map(|c| c.view()).collect::<Html>()}    
-                                </ul>}
-                            } else {
-                                html! {}
-                            }
-                        }
-                    </li>}
+                    get_html_with_children!(li, parent.get_name() + " (Struct)")
                 } else {
-                    html! {<div class="treeviewroot">
-                        <p class="treeviewitem">{"Root (Struct)"}</p>
-                        {
-                            if *expanded {
-                                html! {<ul>
-                                    {children.iter().map(|c| c.view()).collect::<Html>()}    
-                                </ul>}
-                            } else {
-                                html! {}
-                            }
-                        }
-                    </div>}
+                    get_html_with_children!(div, "Root (Struct)")
                 }
             }
             TreeNode::List(children, parent_info, expanded) => {
                 let parent = parent_info.unwrap();
-                html! {<li>
-                    <p>{parent.get_name() + " (List)"}</p>
-                    {
-                        if *expanded {
-                            html! {<ul>
-                                {children.iter().map(|c| c.view()).collect::<Html>()}    
-                            </ul>}
-                        } else {
-                            html! {}
-                        }
-                    }
-                </li>}
+                get_html_with_children!(li, parent.get_name() + " (List)")
             }
             TreeNode::Value(param, parent_info) => {
                 let parent = parent_info.unwrap();
-                html! {<li>
-                    <p>{parent.get_name() + match param {
-                        ParamKind::Struct(_) => unreachable!(),
-                        ParamKind::List(_) => unreachable!(),
-                        ParamKind::Bool(_) => " (Bool)",
-                        ParamKind::U8(_) => " (U8)",
-                        ParamKind::I8(_) => " (I8)",
-                        ParamKind::U16(_) => " (U16)",
-                        ParamKind::I16(_) => " (I16)",
-                        ParamKind::U32(_) => " (U32)",
-                        ParamKind::I32(_) => " (I32)",
-                        ParamKind::Float(_) => " (Float)",
-                        ParamKind::Hash(_) => " (Hash)",
-                        ParamKind::Str(_) => " (Str)",
-                    }}</p>
-                </li>}
+                get_html!(li, parent.get_name() + param.as_ref())
             }
         }
     }
