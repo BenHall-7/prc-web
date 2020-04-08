@@ -1,6 +1,6 @@
 use yew::{Component, ComponentLink, Properties, Html, html};
 use prc::param::{ParamKind};
-use prc::strum::AsStaticRef;
+// use prc::strum::AsStaticRef;
 use prc::hash40::Hash40;
 
 #[derive(Debug, Clone, Copy)]
@@ -37,96 +37,139 @@ impl TreeProps {
 }
 
 #[derive(Debug, Clone)]
+pub enum TreeMessage {
+    ToggleExpand
+}
+
+#[derive(Debug, Clone)]
 pub enum TreeNode {
-    /// Contains children, parent info, and a property for whether it is expanded
-    Struct(Vec<TreeNode>, Option<ParentInfo>, bool),
-    /// Contains children, parent info, and a property for whether it is expanded
-    List(Vec<TreeNode>, Option<ParentInfo>, bool),
-    /// Contains the real param and parent info
-    Value(ParamKind, Option<ParentInfo>),
+    Struct {
+        link: ComponentLink<Self>,
+        children: Vec<TreeNode>,
+        parent: Option<ParentInfo>,
+        expanded: bool,
+    },
+    List {
+        link: ComponentLink<Self>,
+        children: Vec<TreeNode>,
+        parent: ParentInfo,
+        expanded: bool,
+    },
+    Value {
+        link: ComponentLink<Self>,
+        param: ParamKind,
+        parent: ParentInfo,
+    },
 }
 
 impl TreeNode {
     #[inline]
     pub fn can_expand(&self) -> bool {
         match self {
-            TreeNode::Struct(children, _, _) => !children.is_empty(),
-            TreeNode::List(children, _, _) => !children.is_empty(),
+            TreeNode::Struct { children, .. } => !children.is_empty(),
+            TreeNode::List { children, .. } => !children.is_empty(),
             _ => false
+        }
+    }
+
+    #[inline]
+    pub fn link(&self) -> &ComponentLink<Self> {
+        match self {
+            TreeNode::Struct { link, .. } => link,
+            TreeNode::List { link, .. } => link,
+            TreeNode::Value { link, .. } => link,
         }
     }
 }
 
 impl Component for TreeNode {
-    type Message = ();
+    type Message = TreeMessage;
     type Properties = TreeProps;
 
-    fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
+    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let param = props.param;
         match param {
             ParamKind::Struct(mut s) => {
-                TreeNode::Struct(
-                    s.drain(..).enumerate().map(|(i, (h, p))| {
+                TreeNode::Struct {
+                    children: s.drain(..).enumerate().map(|(i, (h, p))| {
                         TreeNode::create(
                             TreeProps::new(
                                 p,
                                 Some(ParentInfo::Struct(h, i)),
-                                true
+                                false
                             ),
                             ComponentLink::default()
                         )
                     }).collect::<Vec<_>>(),
 
-                    props.parent,
-
-                    props.expand
-                )
+                    parent: props.parent,
+                    expanded: props.expand,
+                    link,
+                }
             }
             ParamKind::List(mut l) => {
-                TreeNode::List(
-                    l.drain(..).enumerate().map(|(i, p)| {
+                TreeNode::List {
+                    children: l.drain(..).enumerate().map(|(i, p)| {
                         TreeNode::create(
                             TreeProps::new(
                                 p,
                                 Some(ParentInfo::List(i)),
-                                true
+                                false
                             ),
                             ComponentLink::default()
                         )
                     }).collect::<Vec<_>>(),
 
-                    props.parent,
-
-                    props.expand
-                )
+                    parent: props.parent.unwrap(),
+                    expanded: props.expand,
+                    link,
+                }
             }
             _ => {
-                TreeNode::Value(param, props.parent)
+                TreeNode::Value { 
+                    param, 
+                    parent: props.parent.unwrap(),
+                    link,
+                }
             }
         }
     }
 
-    fn update(&mut self, _: Self::Message) -> bool {
-        false
+    fn update(&mut self, msg: Self::Message) -> bool {
+        match msg {
+            TreeMessage::ToggleExpand => {
+                yew::services::ConsoleService::new().log("Test");
+                match self {
+                    TreeNode::Struct { expanded, .. } => {
+                        *expanded = !*expanded
+                    }
+                    TreeNode::List { expanded, .. } => {
+                        *expanded = !*expanded
+                    }
+                    _ => {}
+                }
+            }
+        }
+        true
     }
 
     fn view(&self) -> Html {
         macro_rules! get_html_with_children {
             ($main_tag:ident, $node_text:expr) => {
-                html! {<$main_tag>
+                html! {<$main_tag class="treeitem">
                     { if self.can_expand() {
-                        html! {<button> 
+                        html! {<button onclick=self.link().callback(|_| TreeMessage::ToggleExpand)> 
                             { if *expanded {
-                                html! {<image src="image/angle-down-solid.svg"/>}
+                                html! {<image src="/image/angle-down-solid.svg"/>}
                             } else {
-                                html! {<image src="image/angle-down-solid.svg"/>}
+                                html! {<image src="/image/angle-right-solid.svg"/>}
                             }}
                         </button>}
                     } else { html!{} }}
                     <p>{$node_text}</p>
                     { if *expanded {
                         html! {<ul>
-                            {children.iter().map(|c| c.view()).collect::<Html>()}    
+                            {children.iter().map(|c| c.view()).collect::<Html>()}
                         </ul>}
                     } else {
                         html! {}
@@ -134,27 +177,26 @@ impl Component for TreeNode {
                 </$main_tag>}
             };
         }
+
         macro_rules! get_html {
             ($main_tag:ident, $node_text:expr) => {
-                html! {<$main_tag><p>{$node_text}</p></$main_tag>}
+                html! {<$main_tag class="treeitem"><p>{$node_text}</p></$main_tag>}
             };
         }
 
         match self {
-            TreeNode::Struct(children, parent_info, expanded) => {
+            TreeNode::Struct { children, parent: parent_info, expanded, .. } => {
                 if let Some(parent) = parent_info {
-                    get_html_with_children!(li, parent.get_name() + " (Struct)")
+                    get_html_with_children!(li, parent.get_name())
                 } else {
-                    get_html_with_children!(div, "Root (Struct)")
+                    get_html_with_children!(div, "root")
                 }
             }
-            TreeNode::List(children, parent_info, expanded) => {
-                let parent = parent_info.unwrap();
-                get_html_with_children!(li, parent.get_name() + " (List)")
+            TreeNode::List { children, parent, expanded, .. } => {
+                get_html_with_children!(li, parent.get_name())
             }
-            TreeNode::Value(param, parent_info) => {
-                let parent = parent_info.unwrap();
-                get_html!(li, parent.get_name() + param.as_ref())
+            TreeNode::Value { parent, .. } => {
+                get_html!(li, parent.get_name())
             }
         }
     }
