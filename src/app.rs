@@ -1,4 +1,5 @@
 use prc::param::{ParamKind, ParamStruct};
+use web_sys::Window;
 use yew::services::storage::{Area, StorageService};
 use yew::prelude::*;
 use std::io::Cursor;
@@ -23,6 +24,9 @@ impl Component for App {
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         let param_root = prc::read_stream(&mut Cursor::new(&TEST_FILE)).unwrap();
+
+        
+
         App {
             link,
             storage: StorageService::new(Area::Session).unwrap(),

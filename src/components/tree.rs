@@ -138,6 +138,7 @@ impl Component for TreeNode {
     fn update(&mut self, msg: Self::Message) -> bool {
         match msg {
             TreeMessage::ToggleExpand => {
+                yew::services::ConsoleService::new().log("Test");
                 match self {
                     TreeNode::Struct { expanded, .. } => {
                         *expanded = !*expanded
@@ -157,12 +158,11 @@ impl Component for TreeNode {
             ($main_tag:ident, $node_text:expr) => {
                 html! {<$main_tag class="treeitem">
                     { if self.can_expand() {
-                        html! {<button onclick=self.link().callback(|_| TreeMessage::ToggleExpand)> 
-                            { if *expanded {
-                                html! {<image src="/image/angle-down-solid.svg"/>}
-                            } else {
-                                html! {<image src="/image/angle-right-solid.svg"/>}
-                            }}
+                        html! {<button onclick=self.link().callback(|_| TreeMessage::ToggleExpand) class="expand-button"> 
+                            <img
+                                src=if *expanded {"/image/angle-down-solid.svg"} else {"/image/angle-right-solid.svg"}
+                                style="width: 15px; height: 15px;"
+                            />
                         </button>}
                     } else { html!{} }}
                     <p>{$node_text}</p>
