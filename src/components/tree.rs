@@ -96,7 +96,7 @@ impl Component for TreeNode {
                             TreeProps::new(
                                 p,
                                 Some(ParentInfo::Struct(h, i)),
-                                false
+                                true
                             ),
                             ComponentLink::default()
                         )
@@ -114,7 +114,7 @@ impl Component for TreeNode {
                             TreeProps::new(
                                 p,
                                 Some(ParentInfo::List(i)),
-                                false
+                                true
                             ),
                             ComponentLink::default()
                         )
@@ -138,7 +138,6 @@ impl Component for TreeNode {
     fn update(&mut self, msg: Self::Message) -> bool {
         match msg {
             TreeMessage::ToggleExpand => {
-                yew::services::ConsoleService::new().log("Test");
                 match self {
                     TreeNode::Struct { expanded, .. } => {
                         *expanded = !*expanded
@@ -167,13 +166,9 @@ impl Component for TreeNode {
                         </button>}
                     } else { html!{} }}
                     <p>{$node_text}</p>
-                    { if *expanded {
-                        html! {<ul>
-                            {children.iter().map(|c| c.view()).collect::<Html>()}
-                        </ul>}
-                    } else {
-                        html! {}
-                    }}
+                    <ul hidden=!*expanded>
+                        {children.iter().map(|c| c.view()).collect::<Html>()}
+                    </ul>
                 </$main_tag>}
             };
         }
