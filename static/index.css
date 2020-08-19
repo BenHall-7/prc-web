@@ -5,12 +5,31 @@
 
 body {
     min-width: 500px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12pt;
+    line-height: 1em;
+}
+
+h1 {
+    line-height: normal;
+    text-align: right;
+    text-decoration: underline;
 }
 
 .app {
     margin: 20px 40px;
-    padding: 10px;
+    padding: 20px;
     background: lightgoldenrodyellow;
+}
+
+.app .tree-container {
+    padding-left: 10px;
+}
+
+ul {
+    margin: 4px 0 4px 4px;
+    padding-left: 10px;
+    border-left: 2px dashed gray;
 }
 
 li {
@@ -18,13 +37,14 @@ li {
 }
 
 .tree-container {
-    padding-left: 15px;
+    margin: 4px 0;
 }
 
 .tree-header {
-    display: flex;
+    display: inline-flex;
     flex-direction: row;
-    align-items: center;
+    align-items: baseline;
+    cursor: pointer;
 }
 
 .expand-button {
@@ -33,7 +53,8 @@ li {
 }
 
 .expand-button img {
-    margin-left: -15px;
-    width: 15px;
-    height: 15px;
+    display: block;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
 }

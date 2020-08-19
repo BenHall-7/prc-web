@@ -107,12 +107,12 @@ impl Component for ParamTreeNode {
             ($main_tag:ident, $node_text:expr) => {
                 html! {
                     <$main_tag class="tree-container">
-                        <div class="tree-header">
+                        <div onclick=self.link.callback(|_| TreeMessage::ToggleExpand) class="tree-header">
                         {
                             if self.can_expand() {
                                 html! {
-                                    <button onclick=self.link.callback(|_| TreeMessage::ToggleExpand) class="expand-button">
-                                        <img src=if self.expanded {"/image/caret-down-solid.svg"} else {"/image/caret-right-solid.svg"} />
+                                    <button class="expand-button">
+                                        <img src=if self.expanded {"/image/caret-down.png"} else {"/image/caret-right.png"} />
                                     </button>
                                 }
                             } else {
