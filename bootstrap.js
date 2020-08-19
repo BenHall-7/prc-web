@@ -6,7 +6,7 @@ function fetchLabels() {
 import("./pkg").then(module => {
   fetchLabels()
     .then(res => {
-      module.load_labels(res)
+      module.load_labels(res);
       module.run_app();
     })
     .catch(_ => {
