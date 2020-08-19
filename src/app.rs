@@ -32,8 +32,8 @@ impl Component for App {
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         App {
-            link,
-            storage: StorageService::new(Area::Session).unwrap(),
+            // link,
+            // storage: StorageService::new(Area::Session).unwrap(),
             state: State { param_root: &ROOT },
         }
     }
