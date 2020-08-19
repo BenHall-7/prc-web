@@ -7,8 +7,6 @@ mod utils;
 use prc::hash40::{set_custom_labels, Hash40};
 use wasm_bindgen::prelude::*;
 
-use std::io::BufReader;
-
 // This is the entry point for the web app
 #[wasm_bindgen]
 pub fn run_app() -> Result<(), JsValue> {

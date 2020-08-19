@@ -106,15 +106,21 @@ impl Component for ParamTreeNode {
         macro_rules! get_html_with_children {
             ($main_tag:ident, $node_text:expr) => {
                 html! {
-                    <$main_tag class="treeitem">
-                        { if self.can_expand() {
-                            html! {
-                                <button onclick=self.link.callback(|_| TreeMessage::ToggleExpand) class="expand-button">
-                                    <img src=if self.expanded {"/image/angle-down-solid.svg"} else {"/image/angle-right-solid.svg"} />
-                                </button>
+                    <$main_tag class="tree-container">
+                        <div class="tree-header">
+                        {
+                            if self.can_expand() {
+                                html! {
+                                    <button onclick=self.link.callback(|_| TreeMessage::ToggleExpand) class="expand-button">
+                                        <img src=if self.expanded {"/image/caret-down-solid.svg"} else {"/image/caret-right-solid.svg"} />
+                                    </button>
+                                }
+                            } else {
+                                html! {}
                             }
-                        } else { html!{} }}
+                        }
                         <p>{$node_text}</p>
+                        </div>
                         <ul hidden=!self.expanded>
                             { children.iter().enumerate().map(|c| {
                                 let props: TreeProps = c.into();
@@ -134,7 +140,7 @@ impl Component for ParamTreeNode {
 
         macro_rules! get_html {
             ($main_tag:ident, $node_text:expr) => {
-                html! {<$main_tag class="treeitem"><p>{$node_text}</p></$main_tag>}
+                html! {<$main_tag class="tree-container"><p>{$node_text}</p></$main_tag>}
             };
         }
 

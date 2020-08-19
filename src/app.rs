@@ -2,7 +2,7 @@ use lazy_static::lazy_static;
 use prc::param::{ParamKind};
 use std::io::Cursor;
 use yew::prelude::*;
-use yew::services::storage::{Area, StorageService};
+// use yew::services::storage::{Area, StorageService};
 
 use crate::components::{ParamParent, ParamTreeNode};
 
@@ -30,7 +30,7 @@ impl Component for App {
     type Message = ();
     type Properties = ();
 
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_: Self::Properties, _link: ComponentLink<Self>) -> Self {
         App {
             // link,
             // storage: StorageService::new(Area::Session).unwrap(),
@@ -42,13 +42,13 @@ impl Component for App {
         false
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         false
     }
 
     fn view(&self) -> Html {
         html! {
-            <div>
+            <div class="app">
                 <h1>{"etc.prc"}</h1>
                 <ParamTreeNode
                     param=self.state.param_root

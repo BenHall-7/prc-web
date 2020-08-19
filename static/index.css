@@ -3,20 +3,37 @@
     padding: 0;
 }
 
+body {
+    min-width: 500px;
+}
+
+.app {
+    margin: 20px 40px;
+    padding: 10px;
+    background: lightgoldenrodyellow;
+}
+
 li {
     list-style: none;
 }
 
-ul {
-    margin-left: 20px;
+.tree-container {
+    padding-left: 15px;
+}
+
+.tree-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .expand-button {
-    background: orange;
+    background: none;
     border: none;
 }
 
 .expand-button img {
+    margin-left: -15px;
     width: 15px;
     height: 15px;
 }
