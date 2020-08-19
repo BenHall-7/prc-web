@@ -1,10 +1,10 @@
-#![recursion_limit="256"]
+#![recursion_limit = "256"]
 
 mod app;
-mod utils;
 mod components;
+mod utils;
 
-use prc::hash40::{Hash40, set_custom_labels};
+use prc::hash40::{set_custom_labels, Hash40};
 use wasm_bindgen::prelude::*;
 
 use std::io::BufReader;
@@ -34,6 +34,6 @@ pub fn load_labels(text: String) {
 
         None
     });
-    
+
     set_custom_labels(iterator);
 }

@@ -1,5 +1,5 @@
-use yew::{Component, ComponentLink, Properties, Html, html, ShouldRender};
-use prc::param::{ParamKind};
+use prc::param::ParamKind;
+use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 // use prc::strum::AsStaticRef;
 use prc::hash40::Hash40;
 
@@ -36,7 +36,7 @@ impl From<(usize, &'static (Hash40, ParamKind))> for TreeProps {
     fn from(f: (usize, &'static (Hash40, ParamKind))) -> Self {
         Self {
             param: &(f.1).1,
-            parent: ParamParent(Some(ParentInfo::Struct((f.1).0, f.0))) ,
+            parent: ParamParent(Some(ParentInfo::Struct((f.1).0, f.0))),
             expand: false,
         }
     }
@@ -54,7 +54,7 @@ impl From<(usize, &'static ParamKind)> for TreeProps {
 
 #[derive(Debug, Clone)]
 pub enum TreeMessage {
-    ToggleExpand
+    ToggleExpand,
 }
 
 #[derive(Debug, Clone)]
@@ -109,11 +109,8 @@ impl Component for ParamTreeNode {
                     <$main_tag class="treeitem">
                         { if self.can_expand() {
                             html! {
-                                <button onclick=self.link.callback(|_| TreeMessage::ToggleExpand) class="expand-button"> 
-                                    <img
-                                        src=if self.expanded {"/image/angle-down-solid.svg"} else {"/image/angle-right-solid.svg"}
-                                        style="width: 15px; height: 15px;"
-                                    />
+                                <button onclick=self.link.callback(|_| TreeMessage::ToggleExpand) class="expand-button">
+                                    <img src=if self.expanded {"/image/angle-down-solid.svg"} else {"/image/angle-right-solid.svg"} />
                                 </button>
                             }
                         } else { html!{} }}
@@ -149,9 +146,7 @@ impl Component for ParamTreeNode {
                     get_html_with_children!(div, "root")
                 }
             }
-            ParamKind::List(children) => {
-                get_html_with_children!(li, self.parent.get_name())
-            }
+            ParamKind::List(children) => get_html_with_children!(li, self.parent.get_name()),
             ParamKind::Bool(_) => get_html!(li, self.parent.get_name()),
             ParamKind::I8(_) => get_html!(li, self.parent.get_name()),
             ParamKind::U8(_) => get_html!(li, self.parent.get_name()),

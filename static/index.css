@@ -12,6 +12,11 @@ ul {
 }
 
 .expand-button {
-    background: none;
+    background: orange;
     border: none;
+}
+
+.expand-button img {
+    width: 15px;
+    height: 15px;
 }

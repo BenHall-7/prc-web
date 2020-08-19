@@ -1,25 +1,24 @@
-use prc::param::{ParamKind, ParamStruct};
-use web_sys::Window;
-use yew::services::storage::{Area, StorageService};
-use yew::prelude::*;
 use lazy_static::lazy_static;
+use prc::param::{ParamKind};
 use std::io::Cursor;
+use yew::prelude::*;
+use yew::services::storage::{Area, StorageService};
 
-use crate::components::{ParamTreeNode, ParamParent};
+use crate::components::{ParamParent, ParamTreeNode};
 
 const TEST_FILE: &[u8] = include_bytes!("etc.prc");
 
-lazy_static!(
+lazy_static! {
     static ref ROOT: ParamKind = {
         let mut reader = Cursor::new(&TEST_FILE);
         let data = prc::read_stream(&mut reader).unwrap();
         ParamKind::Struct(data)
     };
-);
+}
 
 pub struct App {
-    link: ComponentLink<Self>,
-    storage: StorageService,
+    // link: ComponentLink<Self>,
+    // storage: StorageService,
     state: State,
 }
 
@@ -35,10 +34,8 @@ impl Component for App {
         App {
             link,
             storage: StorageService::new(Area::Session).unwrap(),
-            state: State {
-                param_root: &ROOT,
-            }
-        } 
+            state: State { param_root: &ROOT },
+        }
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
