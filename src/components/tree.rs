@@ -73,6 +73,10 @@ impl ParamTreeNode {
             _ => false,
         }
     }
+
+    fn is_expanded(&self) -> bool {
+        self.can_expand() && self.expanded
+    }
 }
 
 impl Component for ParamTreeNode {
@@ -110,29 +114,30 @@ impl Component for ParamTreeNode {
                         <div onclick=self.link.callback(|_| TreeMessage::ToggleExpand) class="tree-header">
                         {
                             if self.can_expand() {
-                                html! {
+                                html! {<>
                                     <button class="expand-button">
                                         <img src=if self.expanded {"/image/caret-down.png"} else {"/image/caret-right.png"} />
                                     </button>
-                                }
+                                    <p>{$node_text}</p>
+                                </>}
                             } else {
-                                html! {}
+                                html! {<p class="corrected">{$node_text}</p>}
                             }
                         }
-                        <p>{$node_text}</p>
                         </div>
-                        <ul hidden=!self.expanded>
-                            { children.iter().enumerate().map(|c| {
-                                let props: TreeProps = c.into();
-                                html! {
-                                    <ParamTreeNode
-                                        param=props.param
-                                        parent=props.parent
-                                        expand=true
-                                    />
-                                }
-                            }).collect::<Html>() }
-                        </ul>
+                        { if self.is_expanded() {
+                            html! {<ul>{
+                                children.iter().enumerate().map(|c| {
+                                    let props: TreeProps = c.into();
+                                    html! {
+                                        <ParamTreeNode
+                                            param=props.param
+                                            parent=props.parent
+                                        />
+                                    }
+                                }).collect::<Html>()
+                            }</ul>}
+                        } else { html! {} }}
                     </$main_tag>
                 }
             };
@@ -140,7 +145,7 @@ impl Component for ParamTreeNode {
 
         macro_rules! get_html {
             ($main_tag:ident, $node_text:expr) => {
-                html! {<$main_tag class="tree-container"><p>{$node_text}</p></$main_tag>}
+                html! {<$main_tag class="tree-container"><p class="corrected">{$node_text}</p></$main_tag>}
             };
         }
 

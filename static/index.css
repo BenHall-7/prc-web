@@ -1,3 +1,11 @@
+/*
+NOTE:
+Space is being measured carefully to ensure alignment between words, carets, and dashes.
+The space to the left of each word is 16px.
+This includes the caret sign, if it exists on the node
+When the caret sign is included, the width is 10px and the remaining space is 6px.
+*/
+
 * {
     margin: 0;
     padding: 0;
@@ -10,20 +18,27 @@ body {
     line-height: 1em;
 }
 
-h1 {
-    line-height: normal;
-    text-align: right;
-    text-decoration: underline;
-}
-
 .app {
-    margin: 20px 40px;
-    padding: 20px;
     background: lightgoldenrodyellow;
 }
 
-.app .tree-container {
-    padding-left: 10px;
+header {
+    background: chocolate;
+    padding: 10px 0;
+}
+
+h1 {
+    line-height: normal;
+    text-align: center;
+    text-decoration: underline;
+}
+
+.tree-view {
+    padding: 20px;
+}
+
+.corrected {
+    padding-left: 16px;
 }
 
 ul {

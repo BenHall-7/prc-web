@@ -6,7 +6,7 @@ use yew::prelude::*;
 
 use crate::components::{ParamParent, ParamTreeNode};
 
-const TEST_FILE: &[u8] = include_bytes!("etc.prc");
+const TEST_FILE: &[u8] = include_bytes!("test.prc");
 
 lazy_static! {
     static ref ROOT: ParamKind = {
@@ -49,12 +49,16 @@ impl Component for App {
     fn view(&self) -> Html {
         html! {
             <div class="app">
-                <h1>{"etc.prc"}</h1>
-                <ParamTreeNode
-                    param=self.state.param_root
-                    parent=ParamParent(None)
-                    expand=true
-                />
+                <header>
+                    <h1>{"prc-editor"}</h1>
+                </header>
+                <section class="tree-view">
+                    <ParamTreeNode
+                        param=self.state.param_root
+                        parent=ParamParent(None)
+                        expand=true
+                    />
+                </section>
             </div>
         }
     }
