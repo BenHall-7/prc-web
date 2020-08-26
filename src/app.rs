@@ -50,7 +50,7 @@ impl Component for App {
         html! {
             <div class="app">
                 <header>
-                    <h1>{"prc-editor"}</h1>
+                    <h1>{"PRC Web Editor"}</h1>
                 </header>
                 <section class="tree-view">
                     <ParamTreeNode
@@ -62,4 +62,6 @@ impl Component for App {
             </div>
         }
     }
+
+    
 }

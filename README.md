@@ -6,9 +6,9 @@
 
 *Prerequisites:*
 
-- Rust: Cargo, Wasm-pack
+- Rust: `cargo`, `wasm-pack`
 
-- Javascript: Node, Yarn (alternatively npm, if you modify instructions suitably)
+- Javascript: `node`, `yarn` / `npm`
 
 *Start the development server:*
 
@@ -21,7 +21,5 @@
 ## Attribution
 
 This project relies uses open source material not specified in its dependencies:
-
-- Font Awesome: [license](https://fontawesome.com/license)
 
 - yew-wasm-pack-template: [source](https://github.com/yewstack/yew-wasm-pack-template)

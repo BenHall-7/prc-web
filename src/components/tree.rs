@@ -77,6 +77,64 @@ impl ParamTreeNode {
     fn is_expanded(&self) -> bool {
         self.can_expand() && self.expanded
     }
+
+    fn view_wrapper(&self, inner: Html) -> Html {
+        if self.parent.0.is_some() {
+            html! { <li class="tree-container">{ inner }</li> }
+        } else {
+            html! { <div class="tree-container">{ inner }</div> }
+        }
+    }
+
+    fn view_container<T: Into<TreeProps>, I: Iterator<Item=T>>(&self, children: I) -> Html {
+        self.view_wrapper(
+            html! { <>
+                <div onclick=self.link.callback(|_| TreeMessage::ToggleExpand) class="tree-header">
+                    {self.view_header_content()}
+                </div>
+                {if self.is_expanded() {
+                    self.view_children(children)
+                } else { html! {} }}
+            </> }    
+        )
+    }
+
+    fn view_children<T: Into<TreeProps>, I: Iterator<Item=T>>(&self, children: I) -> Html {
+        html! {<ul>{
+            children.map(|c| {
+                let props: TreeProps = c.into();
+                html! {
+                    <ParamTreeNode
+                        param=props.param
+                        parent=props.parent
+                    />
+                }
+            }).collect::<Html>()
+        }</ul>}
+    }
+
+    fn view_header_content(&self) -> Html {
+        if self.can_expand() {
+            html! {<>
+                <button class="expand-button">
+                    <img src=if self.expanded {"/image/caret-down.png"} else {"/image/caret-right.png"} />
+                </button>
+                <p>{self.parent.get_name()}</p>
+            </>}
+        } else {
+            html! {<p class="corrected">{self.parent.get_name()}</p>}
+        }
+    }
+
+    fn view_value_type(&self) -> Html {
+        html! {
+            <li class="tree-container">
+                <p class="corrected">
+                    {self.parent.get_name()}
+                </p>
+            </li>
+        }
+    }
 }
 
 impl Component for ParamTreeNode {
@@ -107,67 +165,14 @@ impl Component for ParamTreeNode {
     }
 
     fn view(&self) -> Html {
-        macro_rules! get_html_with_children {
-            ($main_tag:ident, $node_text:expr) => {
-                html! {
-                    <$main_tag class="tree-container">
-                        <div onclick=self.link.callback(|_| TreeMessage::ToggleExpand) class="tree-header">
-                        {
-                            if self.can_expand() {
-                                html! {<>
-                                    <button class="expand-button">
-                                        <img src=if self.expanded {"/image/caret-down.png"} else {"/image/caret-right.png"} />
-                                    </button>
-                                    <p>{$node_text}</p>
-                                </>}
-                            } else {
-                                html! {<p class="corrected">{$node_text}</p>}
-                            }
-                        }
-                        </div>
-                        { if self.is_expanded() {
-                            html! {<ul>{
-                                children.iter().enumerate().map(|c| {
-                                    let props: TreeProps = c.into();
-                                    html! {
-                                        <ParamTreeNode
-                                            param=props.param
-                                            parent=props.parent
-                                        />
-                                    }
-                                }).collect::<Html>()
-                            }</ul>}
-                        } else { html! {} }}
-                    </$main_tag>
-                }
-            };
-        }
-
-        macro_rules! get_html {
-            ($main_tag:ident, $node_text:expr) => {
-                html! {<$main_tag class="tree-container"><p class="corrected">{$node_text}</p></$main_tag>}
-            };
-        }
-
         match self.param {
             ParamKind::Struct(children) => {
-                if let Some(_) = self.parent.0 {
-                    get_html_with_children!(li, self.parent.get_name())
-                } else {
-                    get_html_with_children!(div, "root")
-                }
+                self.view_container(children.iter().enumerate())
             }
-            ParamKind::List(children) => get_html_with_children!(li, self.parent.get_name()),
-            ParamKind::Bool(_) => get_html!(li, self.parent.get_name()),
-            ParamKind::I8(_) => get_html!(li, self.parent.get_name()),
-            ParamKind::U8(_) => get_html!(li, self.parent.get_name()),
-            ParamKind::I16(_) => get_html!(li, self.parent.get_name()),
-            ParamKind::U16(_) => get_html!(li, self.parent.get_name()),
-            ParamKind::I32(_) => get_html!(li, self.parent.get_name()),
-            ParamKind::U32(_) => get_html!(li, self.parent.get_name()),
-            ParamKind::Float(_) => get_html!(li, self.parent.get_name()),
-            ParamKind::Hash(_) => get_html!(li, self.parent.get_name()),
-            ParamKind::Str(_) => get_html!(li, self.parent.get_name()),
+            ParamKind::List(children) => {
+                self.view_container(children.iter().enumerate())
+            }
+            _ => self.view_value_type(),
         }
     }
 }
