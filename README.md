@@ -8,15 +8,15 @@
 
 - Rust: `cargo`, `wasm-pack`
 
-- Javascript: `node`, `yarn` / `npm`
+- Javascript: `node`, `npm` / `yarn`
 
 *Start the development server:*
 
-- `yarn` to install dependencies
+- `npm i` to install dependencies
 
-- `yarn build` to create a `dist` folder with the needed files
+- `npm build` to create a `dist` folder with the needed files
 
-- `yarn start` to begin a development server
+- `npm start` to begin a development server
 
 ## Attribution
 

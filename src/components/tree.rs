@@ -142,7 +142,6 @@ impl Component for ParamTreeNode {
     type Properties = TreeProps;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        // let param = Param::from(props.param);
         Self {
             link,
             parent: props.parent,
